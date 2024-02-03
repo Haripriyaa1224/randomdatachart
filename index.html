@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time Dynamic Chart</title>
+    <link rel="stylesheet" href="./style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/animejs"></script>
+</head>
+<body>
+<main class="container">
+<canvas id="realTimeChart"></canvas>
+</main>
+
+<script>
+    // Sample data
+    let data = {
+        labels: [],
+        datasets: [{
+            label: 'Real-time Data',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 2,
+            fill: false,
+            data: [],
+        }]
+    };
+
+    // Configuration options
+    let options = {
+        scales: {
+            x: {
+                type: 'linear',
+                position: 'bottom',
+                min: 0,
+                max: 10,
+            },
+            y: {
+                type: 'linear',
+                position: 'left',
+                min: 0,
+                max: 100,
+            }
+        }
+    };
+
+    // Create a new Chart instance
+    let ctx = document.getElementById('realTimeChart').getContext('2d');
+    let myChart = new Chart(ctx, {
+        type: 'line',
+        data: data,
+        options: options
+    });
+
+    // Update the chart with new data every second
+    setInterval(function () {
+        let newDataPoint = Math.floor(Math.random() * 100); // Generate random data point
+        let currentLabels = myChart.data.labels;
+        let currentData = myChart.data.datasets[0].data;
+
+        // Add new data point
+        currentLabels.push(currentLabels.length);
+        currentData.push(newDataPoint);
+
+        // Remove old data point if there are more than 10 data points
+        if (currentLabels.length > 10) {
+            currentLabels.shift();
+            currentData.shift();
+        }
+
+        // Update the chart
+        myChart.update();
+
+        // Use Anime.js to animate the chart
+        anime({
+            targets: myChart.data.datasets[0],
+            easing: 'linear',
+            duration: 1000,
+            borderWidth: 2,
+            borderColor: 'rgba(75, 192, 192, 1)',
+            update: function () {
+                myChart.update();
+            }
+        });
+    }, 1000); // Update every 1000 milliseconds (1 second)
+</script>
+
+</body>
+</html>
